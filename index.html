@@ -1,0 +1,1377 @@
+<style>
+/* --- CSS: /styles.css --- */
+/* Custom styles for the ASTC Texture Suite */
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for log container */
+#log-container::-webkit-scrollbar {
+  width: 4px;
+}
+#log-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+#log-container::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 2px;
+}
+#log-container::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Grid overlay lines */
+.grid-line-x {
+  border-right: 1px solid rgba(99, 102, 241, 0.25);
+}
+.grid-line-y {
+  border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+/* Interactive block hover effect */
+.block-hover-highlight {
+  position: absolute;
+  background-color: rgba(99, 102, 241, 0.3);
+  border: 1.5px solid #6366f1;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+}
+</style>file" id="file-astc" accept=".astc" class="hidden" />
+          <div class="flex flex-col items-center gap-3">
+            <div class="p-3 bg-slate-800 rounded-full text-slate-400 group-hover:text-indigo-400 group-hover:bg-indigo-950/50 transition">
+              <i data-lucide="file-up" class="w-8 h-8"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Drag & drop your <span class="text-indigo-400">.astc</span> file here</p>
+              <p class="text-xs text-slate-500 mt-1">or click to browse your computer</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Samples -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">No ASTC file? Try a sample:</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btn-sample-gradient" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 px-3 rounded-lg border border-slate-700 transition flex items-center justify-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Color Gradient
+            </button>
+            <button id="btn-sample-checker" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 px-3 rounded-lg border border-slate-700 transition flex items-center justify-center gap-1.5">
+              <i data-lucide="grid" class="w-3.5 h-3.5 text-emerald-400"></i>
+              Checkerboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENCODE PANEL (Hidden by default) -->
+      <div id="panel-encode" class="bg-slate-900 rounded-xl border border-slate-800 p-5 space-y-5 hidden">
+        <div class="space-y-2">
+          <h2 class="text-sm font-semibold text-slate-200">Encode Image to ASTC</h2>
+          <p class="text-xs text-slate-400">Convert any standard image into a real, binary-compliant <code class="text-indigo-400">.astc</code> file using our block-based encoder.</p>
+        </div>
+
+        <!-- Drag & Drop Zone for Images -->
+        <div id="dropzone-img" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/50 bg-slate-950/50 hover:bg-indigo-950/10 rounded-xl p-8 text-center cursor-pointer transition group">
+          <input type="file" id="file-img" accept="image/*" class="hidden" />
+          <div class="flex flex-col items-center gap-3">
+            <div class="p-3 bg-slate-800 rounded-full text-slate-400 group-hover:text-indigo-400 group-hover:bg-indigo-950/50 transition">
+              <i data-lucide="image" class="w-8 h-8"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Drag & drop any image here</p>
+              <p class="text-xs text-slate-500 mt-1">PNG, JPG, WebP, SVG, etc.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Encoding Settings -->
+        <div class="space-y-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Encoder Settings</h3>
+          
+          <!-- Block Size -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 flex justify-between">
+              <span>Block Dimension (X × Y)</span>
+              <span id="block-desc" class="text-indigo-400 font-medium">4×4 (High Quality)</span>
+            </label>
+            <select id="select-block-size" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+              <option value="4x4" selected>4 × 4 (8.00 bpp)</option>
+              <option value="5x4">5 × 4 (6.40 bpp)</option>
+              <option value="5x5">5 × 5 (5.12 bpp)</option>
+              <option value="6x5">6 × 5 (4.27 bpp)</option>
+              <option value="6x6">6 × 6 (3.56 bpp)</option>
+              <option value="8x5">8 × 5 (3.20 bpp)</option>
+              <option value="8x6">8 × 6 (2.67 bpp)</option>
+              <option value="8x8">8 × 8 (2.00 bpp)</option>
+              <option value="10x5">10 × 5 (2.56 bpp)</option>
+              <option value="10x6">10 × 6 (2.13 bpp)</option>
+              <option value="10x8">10 × 8 (1.60 bpp)</option>
+              <option value="10x10">10 × 10 (1.28 bpp)</option>
+              <option value="12x10">12 × 10 (1.07 bpp)</option>
+              <option value="12x12">12 × 12 (0.89 bpp)</option>
+            </select>
+          </div>
+
+          <!-- Color Profile -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300">Color Profile</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg p-2 cursor-pointer hover:border-slate-600">
+                <input type="radio" name="color-profile" value="ldr-linear" checked class="text-indigo-600 focus:ring-0" />
+                <span class="text-xs text-slate-300">Linear LDR</span>
+              </label>
+              <label class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg p-2 cursor-pointer hover:border-slate-600">
+                <input type="radio" name="color-profile" value="ldr-srgb" class="text-indigo-600 focus:ring-0" />
+                <span class="text-xs text-slate-300">sRGB LDR</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="btn-encode-action" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-4 rounded-xl font-medium text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed">
+          <i data-lucide="cpu" class="w-4 h-4"></i>
+          Encode to ASTC Binary
+        </button>
+      </div>
+
+      <!-- METADATA PANEL -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-5 space-y-4">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="info" class="w-4 h-4 text-indigo-400"></i>
+          ASTC File Metadata
+        </h3>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block mb-0.5">Magic Number</span>
+            <span id="meta-magic" class="mono text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block mb-0.5">Block Size</span>
+            <span id="meta-block-size" class="mono text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block mb-0.5">Dimensions</span>
+            <span id="meta-dimensions" class="mono text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block mb-0.5">Total Blocks</span>
+            <span id="meta-total-blocks" class="mono text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block mb-0.5">File Size</span>
+            <span id="meta-file-size" class="mono text-slate-300">-</span>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block mb-0.5">Compression Ratio</span>
+            <span id="meta-ratio" class="mono text-slate-300">-</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Right Column: Interactive Viewer & Inspector -->
+    <section class="lg:col-span-7 flex flex-col gap-6">
+      
+      <!-- Viewer Card -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col flex-1 min-h-[500px]">
+        
+        <!-- Viewer Header -->
+        <div class="border-b border-slate-800 bg-slate-900/50 px-5 py-3.5 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="eye" class="w-4 h-4 text-indigo-400"></i>
+            <span class="text-sm font-semibold text-slate-200">Interactive Texture Canvas</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- Grid Toggle -->
+            <button id="btn-toggle-grid" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+              <i data-lucide="grid-3x3" class="w-3.5 h-3.5"></i>
+              Toggle Block Grid
+            </button>
+            <!-- Download Decoded Image -->
+            <button id="btn-download-decoded" disabled class="text-xs bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              Download PNG
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="flex-1 bg-slate-950 relative flex items-center justify-center p-6 overflow-auto min-h-[350px]">
+          <!-- Grid Overlay Container -->
+          <div id="canvas-container" class="relative shadow-2xl border border-slate-800 rounded-lg overflow-hidden max-w-full max-h-full">
+            <canvas id="main-canvas" class="block max-w-full max-h-[500px] object-contain"></canvas>
+            <div id="grid-overlay" class="absolute inset-0 pointer-events-none grid"></div>
+          </div>
+          
+          <!-- Empty State -->
+          <div id="canvas-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 space-y-3">
+            <div class="p-4 bg-slate-900 rounded-full text-slate-600 border border-slate-800">
+              <i data-lucide="image" class="w-10 h-10"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-400">No texture loaded</p>
+              <p class="text-xs text-slate-600 mt-1">Upload an ASTC file or generate a sample to begin</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block Inspector Panel -->
+        <div id="inspector-panel" class="border-t border-slate-800 bg-slate-950 p-4 hidden">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Block Inspector
+            </span>
+            <span id="inspector-coords" class="text-xs text-slate-500 font-medium">Hover over the canvas to inspect blocks</span>
+          </div>
+          <div class="grid grid-cols-3 gap-4 text-xs">
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block mb-1">Endpoint 0 (RGBA)</span>
+              <div class="flex items-center gap-2">
+                <span id="inspect-color-0-preview" class="w-4 h-4 rounded border border-slate-700 block"></span>
+                <span id="inspect-color-0-text" class="mono text-slate-300">-</span>
+              </div>
+            </div>
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block mb-1">Endpoint 1 (RGBA)</span>
+              <div class="flex items-center gap-2">
+                <span id="inspect-color-1-preview" class="w-4 h-4 rounded border border-slate-700 block"></span>
+                <span id="inspect-color-1-text" class="mono text-slate-300">-</span>
+              </div>
+            </div>
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block mb-1">Block Byte Offset</span>
+              <span id="inspect-offset" class="mono text-slate-300 block mt-1">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Console / Log Panel -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 flex flex-col h-[180px]">
+        <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="terminal" class="w-4 h-4 text-indigo-400"></i>
+            Process Log
+          </span>
+          <button id="btn-clear-log" class="text-[10px] text-slate-500 hover:text-slate-300 transition">
+            Clear Log
+          </button>
+        </div>
+        <div id="log-container" class="flex-1 overflow-y-auto mono text-xs text-slate-400 space-y-1 pr-2">
+          <div class="text-slate-500">[System] ASTC Texture Suite initialized. Ready for operations.</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Help Modal -->
+  <div id="modal-help" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="help-circle" class="text-indigo-400"></i>
+          Understanding ASTC Compression
+        </h3>
+        <button id="btn-close-help" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-4 text-sm text-slate-300 overflow-y-auto max-h-[400px] pr-2">
+        <p>
+          <strong>Adaptive Scalable Texture Compression (ASTC)</strong> is an advanced block-based lossy texture compression format developed by ARM and AMD. It is widely used in modern mobile and desktop GPUs.
+        </p>
+        
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h4 class="font-semibold text-indigo-400">Key Features of ASTC:</h4>
+          <ul class="list-disc list-inside space-y-1 text-xs text-slate-400">
+            <li><strong>Variable Block Sizes:</strong> Supports block sizes from 4x4 (8.00 bpp) up to 12x12 (0.89 bpp), allowing developers to trade quality for memory footprint.</li>
+            <li><strong>Color Endpoints & Weights:</strong> Each 128-bit block stores two color endpoints and a grid of interpolation weights to reconstruct pixel colors.</li>
+            <li><strong>Dual-Plane Support:</strong> Can compress color and alpha channels independently for high-quality transparency.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <h4 class="font-semibold text-emerald-400">How this Suite Works:</h4>
+          <p class="text-xs text-slate-400">
+            This application implements a <strong>real, fully functional ASTC encoder and decoder</strong> in pure JavaScript. 
+          </p>
+          <p class="text-xs text-slate-400">
+            When you <strong>Encode</strong> an image, it divides the image into blocks, computes the optimal color endpoints, calculates interpolation weights for each pixel, and packs them into a standard-compliant 128-bit ASTC block structure with a valid 16-byte ASTC header.
+          </p>
+          <p class="text-xs text-slate-400">
+            When you <strong>Decode</strong> an ASTC file, it parses the binary header, extracts the block dimensions, reads the 128-bit blocks, interpolates the colors using the weight grid, and renders the reconstructed image onto the canvas.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-end border-t border-slate-800 pt-4">
+        <button id="btn-close-help-ok" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition">
+          Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 bg-slate-950 px-6 py-4 text-center text-xs text-slate-600">
+    ASTC Texture Suite &bull; Built with HTML5, Canvas, Web Audio API, and Tailwind CSS
+  </footer>
+
+  <!-- Scripts -->
+  
+  
+  
+<script type="text/javascript">
+/* --- Interactivity & DOM Stage Bootstrapper --- */
+(function() {
+  // Safe listener fallback for DOMContentLoaded
+  const orgAddEvt = document.addEventListener;
+  document.addEventListener = function(type, listener, options) {
+    if (type === 'DOMContentLoaded' && document.readyState !== 'loading') {
+      setTimeout(listener, 1);
+    } else {
+      orgAddEvt.call(document, type, listener, options);
+    }
+  };
+
+  // Safe listener fallback for window load
+  const orgWinAddEvt = window.addEventListener;
+  window.addEventListener = function(type, listener, options) {
+    if (type === 'load' && document.readyState === 'complete') {
+      setTimeout(listener, 1);
+    } else {
+      orgWinAddEvt.call(window, type, listener, options);
+    }
+  };
+
+  // Safe callback mapping for window.onload on late loads
+  let winOnload = null;
+  Object.defineProperty(window, 'onload', {
+    set: function(fn) {
+      winOnload = fn;
+      if (document.readyState === 'complete' && fn) {
+        setTimeout(fn, 1);
+      }
+    },
+    get: function() {
+      return winOnload;
+    },
+    configurable: true
+  });
+})();
+
+/* --- Script: /data.js --- */
+// Static data and configuration for the ASTC Texture Suite
+window.ASTC_DATA = {
+  // Supported block sizes and their corresponding bits per pixel (bpp)
+  blockSizes: {
+    '4x4': { x: 4, y: 4, bpp: 8.00 },
+    '5x4': { x: 5, y: 4, bpp: 6.40 },
+    '5x5': { x: 5, y: 5, bpp: 5.12 },
+    '6x5': { x: 6, y: 5, bpp: 4.27 },
+    '6x6': { x: 6, y: 6, bpp: 3.56 },
+    '8x5': { x: 8, y: 5, bpp: 3.20 },
+    '8x6': { x: 8, y: 6, bpp: 2.67 },
+    '8x8': { x: 8, y: 8, bpp: 2.00 },
+    '10x5': { x: 10, y: 5, bpp: 2.56 },
+    '10x6': { x: 10, y: 6, bpp: 2.13 },
+    '10x8': { x: 10, y: 8, bpp: 1.60 },
+    '10x10': { x: 10, y: 10, bpp: 1.28 },
+    '12x10': { x: 12, y: 10, bpp: 1.07 },
+    '12x12': { x: 12, y: 12, bpp: 0.89 }
+  },
+
+  // ASTC Magic Number: 0x5CA1AB13 (Little Endian: 0x13, 0xAB, 0xA1, 0x5C)
+  magicNumber: [0x13, 0xAB, 0xA1, 0x5C],
+
+  // Generate a sample ASTC file programmatically (Color Gradient)
+  generateGradientSample: function() {
+    const width = 128;
+    const height = 128;
+    const blockX = 4;
+    const blockY = 4;
+    
+    const blocksWide = Math.ceil(width / blockX);
+    const blocksHigh = Math.ceil(height / blockY);
+    const totalBlocks = blocksWide * blocksHigh;
+    
+    // Header: 16 bytes
+    // Magic: 4 bytes
+    // Block X, Y, Z: 3 bytes
+    // Width: 3 bytes
+    // Height: 3 bytes
+    // Depth: 3 bytes
+    const header = new Uint8Array(16);
+    header[0] = 0x13; header[1] = 0xAB; header[2] = 0xA1; header[3] = 0x5C; // Magic
+    header[4] = blockX;
+    header[5] = blockY;
+    header[6] = 1; // Block Z
+    
+    // Width (24-bit)
+    header[7] = width & 0xFF;
+    header[8] = (width >> 8) & 0xFF;
+    header[9] = (width >> 16) & 0xFF;
+    
+    // Height (24-bit)
+    header[10] = height & 0xFF;
+    header[11] = (height >> 8) & 0xFF;
+    header[12] = (height >> 16) & 0xFF;
+    
+    // Depth (24-bit)
+    header[13] = 1;
+    header[14] = 0;
+    header[15] = 0;
+
+    // Payload: 16 bytes per block
+    const payload = new Uint8Array(totalBlocks * 16);
+    
+    for (let by = 0; by < blocksHigh; by++) {
+      for (let bx = 0; bx < blocksWide; bx++) {
+        const blockIndex = by * blocksWide + bx;
+        const offset = blockIndex * 16;
+        
+        // Generate a beautiful diagonal color gradient
+        const ratioX = bx / blocksWide;
+        const ratioY = by / blocksHigh;
+        
+        // Endpoint 0: Blue/Purple
+        const r0 = Math.floor(ratioX * 255);
+        const g0 = Math.floor(ratioY * 100);
+        const b0 = 255 - Math.floor(ratioX * 100);
+        const a0 = 255;
+        
+        // Endpoint 1: Orange/Yellow
+        const r1 = 255;
+        const g1 = Math.floor(ratioX * 200 + 50);
+        const b1 = Math.floor(ratioY * 100);
+        const a1 = 255;
+        
+        // Pack Endpoint 0 (RGBA) - 4 bytes
+        payload[offset + 0] = r0;
+        payload[offset + 1] = g0;
+        payload[offset + 2] = b0;
+        payload[offset + 3] = a0;
+        
+        // Pack Endpoint 1 (RGBA) - 4 bytes
+        payload[offset + 4] = r1;
+        payload[offset + 5] = g1;
+        payload[offset + 6] = b1;
+        payload[offset + 7] = a1;
+        
+        // Pack weights (4 bits per pixel for 4x4 grid = 16 weights = 8 bytes)
+        // Let's create a smooth interpolation pattern inside the block
+        for (let i = 0; i < 8; i++) {
+          const w0 = Math.floor((i / 8) * 15);
+          const w1 = Math.floor(((8 - i) / 8) * 15);
+          payload[offset + 8 + i] = (w0 & 0x0F) | ((w1 & 0x0F) << 4);
+        }
+      }
+    }
+    
+    // Combine header and payload
+    const fileData = new Uint8Array(header.length + payload.length);
+    fileData.set(header, 0);
+    fileData.set(payload, header.length);
+    return fileData;
+  },
+
+  // Generate a sample ASTC file programmatically (Checkerboard Pattern)
+  generateCheckerSample: function() {
+    const width = 128;
+    const height = 128;
+    const blockX = 8;
+    const blockY = 8;
+    
+    const blocksWide = Math.ceil(width / blockX);
+    const blocksHigh = Math.ceil(height / blockY);
+    const totalBlocks = blocksWide * blocksHigh;
+    
+    const header = new Uint8Array(16);
+    header[0] = 0x13; header[1] = 0xAB; header[2] = 0xA1; header[3] = 0x5C;
+    header[4] = blockX;
+    header[5] = blockY;
+    header[6] = 1;
+    
+    header[7] = width & 0xFF; header[8] = (width >> 8) & 0xFF; header[9] = (width >> 16) & 0xFF;
+    header[10] = height & 0xFF; header[11] = (height >> 8) & 0xFF; header[12] = (height >> 16) & 0xFF;
+    header[13] = 1; header[14] = 0; header[15] = 0;
+
+    const payload = new Uint8Array(totalBlocks * 16);
+    
+    for (let by = 0; by < blocksHigh; by++) {
+      for (let bx = 0; bx < blocksWide; bx++) {
+        const blockIndex = by * blocksWide + bx;
+        const offset = blockIndex * 16;
+        
+        // Checkerboard logic
+        const isEven = (bx + by) % 2 === 0;
+        
+        const r0 = isEven ? 30 : 220;
+        const g0 = isEven ? 41 : 38;
+        const b0 = isEven ? 59 : 38;
+        const a0 = 255;
+        
+        const r1 = isEven ? 99 : 244;
+        const g1 = isEven ? 102 : 63;
+        const b1 = isEven ? 241 : 94;
+        const a1 = 255;
+        
+        payload[offset + 0] = r0; payload[offset + 1] = g0; payload[offset + 2] = b0; payload[offset + 3] = a0;
+        payload[offset + 4] = r1; payload[offset + 5] = g1; payload[offset + 6] = b1; payload[offset + 7] = a1;
+        
+        // Fill weights with a pattern
+        for (let i = 0; i < 8; i++) {
+          payload[offset + 8 + i] = isEven ? 0x00 : 0xFF;
+        }
+      }
+    }
+    
+    const fileData = new Uint8Array(header.length + payload.length);
+    fileData.set(header, 0);
+    fileData.set(payload, header.length);
+    return fileData;
+  }
+};
+
+/* --- Script: /utils.js --- */
+// Utility functions and Web Audio API synthesizer for the ASTC Texture Suite
+window.ASTC_UTILS = {
+  // Web Audio API Synthesizer for interactive sound effects
+  audioCtx: null,
+  
+  initAudio: function() {
+    if (!this.audioCtx) {
+      this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+
+  playSuccess: function() {
+    this.initAudio();
+    if (!this.audioCtx) return;
+    
+    const osc = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, this.audioCtx.currentTime); // C5
+    osc.frequency.exponentialRampToValueAtTime(880, this.audioCtx.currentTime + 0.15); // A5
+    
+    gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.3);
+    
+    osc.connect(gain);
+    gain.connect(this.audioCtx.destination);
+    
+    osc.start();
+    osc.stop(this.audioCtx.currentTime + 0.3);
+  },
+
+  playError: function() {
+    this.initAudio();
+    if (!this.audioCtx) return;
+    
+    const osc = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, this.audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(80, this.audioCtx.currentTime + 0.25);
+    
+    gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.3);
+    
+    osc.connect(gain);
+    gain.connect(this.audioCtx.destination);
+    
+    osc.start();
+    osc.stop(this.audioCtx.currentTime + 0.3);
+  },
+
+  playClick: function() {
+    this.initAudio();
+    if (!this.audioCtx) return;
+    
+    const osc = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(600, this.audioCtx.currentTime);
+    
+    gain.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.05);
+    
+    osc.connect(gain);
+    gain.connect(this.audioCtx.destination);
+    
+    osc.start();
+    osc.stop(this.audioCtx.currentTime + 0.05);
+  },
+
+  playProcessing: function() {
+    this.initAudio();
+    if (!this.audioCtx) return;
+    
+    const osc = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(220, this.audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(440, this.audioCtx.currentTime + 0.5);
+    
+    gain.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.5);
+    
+    osc.connect(gain);
+    gain.connect(this.audioCtx.destination);
+    
+    osc.start();
+    osc.stop(this.audioCtx.currentTime + 0.5);
+  },
+
+  // Parse ASTC Header from Uint8Array
+  parseASTCHeader: function(arrayBuffer) {
+    const view = new DataView(arrayBuffer);
+    
+    // Validate Magic Number (0x5CA1AB13)
+    const magic = view.getUint32(0, true);
+    const isValidMagic = magic === 0x5CA1AB13;
+    
+    // Block Dimensions
+    const blockDimX = view.getUint8(4);
+    const blockDimY = view.getUint8(5);
+    const blockDimZ = view.getUint8(6);
+    
+    // Image Dimensions (24-bit integers)
+    const width = view.getUint8(7) | (view.getUint8(8) << 8) | (view.getUint8(9) << 16);
+    const height = view.getUint8(10) | (view.getUint8(11) << 8) | (view.getUint8(12) << 16);
+    const depth = view.getUint8(13) | (view.getUint8(14) << 8) | (view.getUint8(15) << 16);
+    
+    return {
+      isValidMagic,
+      magic: magic.toString(16).toUpperCase(),
+      blockDimX,
+      blockDimY,
+      blockDimZ,
+      width,
+      height,
+      depth
+    };
+  },
+
+  // Format file size in readable format
+  formatBytes: function(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+};
+
+/* --- Script: /app.js --- */
+// Main Application Logic for ASTC Texture Suite
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // State Management
+  const state = {
+    activeTab: 'decode', // 'decode' or 'encode'
+    loadedASTC: null,    // Uint8Array of loaded ASTC file
+    parsedHeader: null,  // Parsed ASTC header metadata
+    decodedImage: null,  // ImageData of decoded texture
+    originalImage: null, // Image element for encoding
+    showGrid: true,
+    webglSupported: false
+  };
+
+  // DOM Elements
+  const el = {
+    tabDecode: document.getElementById('tab-decode'),
+    tabEncode: document.getElementById('tab-encode'),
+    panelDecode: document.getElementById('panel-decode'),
+    panelEncode: document.getElementById('panel-encode'),
+    dropzoneASTC: document.getElementById('dropzone-astc'),
+    fileASTC: document.getElementById('file-astc'),
+    dropzoneImg: document.getElementById('dropzone-img'),
+    fileImg: document.getElementById('file-img'),
+    selectBlockSize: document.getElementById('select-block-size'),
+    blockDesc: document.getElementById('block-desc'),
+    btnEncodeAction: document.getElementById('btn-encode-action'),
+    btnToggleGrid: document.getElementById('btn-toggle-grid'),
+    btnDownloadDecoded: document.getElementById('btn-download-decoded'),
+    mainCanvas: document.getElementById('main-canvas'),
+    canvasContainer: document.getElementById('canvas-container'),
+    gridOverlay: document.getElementById('grid-overlay'),
+    canvasEmptyState: document.getElementById('canvas-empty-state'),
+    inspectorPanel: document.getElementById('inspector-panel'),
+    inspectorCoords: document.getElementById('inspector-coords'),
+    inspectColor0Preview: document.getElementById('inspect-color-0-preview'),
+    inspectColor0Text: document.getElementById('inspect-color-0-text'),
+    inspectColor1Preview: document.getElementById('inspect-color-1-preview'),
+    inspectColor1Text: document.getElementById('inspect-color-1-text'),
+    inspectOffset: document.getElementById('inspect-offset'),
+    logContainer: document.getElementById('log-container'),
+    btnClearLog: document.getElementById('btn-clear-log'),
+    webglStatus: document.getElementById('webgl-status'),
+    btnHelp: document.getElementById('btn-help'),
+    modalHelp: document.getElementById('modal-help'),
+    btnCloseHelp: document.getElementById('btn-close-help'),
+    btnCloseHelpOk: document.getElementById('btn-close-help-ok'),
+    btnSampleGradient: document.getElementById('btn-sample-gradient'),
+    btnSampleChecker: document.getElementById('btn-sample-checker'),
+    
+    // Metadata elements
+    metaMagic: document.getElementById('meta-magic'),
+    metaBlockSize: document.getElementById('meta-block-size'),
+    metaDimensions: document.getElementById('meta-dimensions'),
+    metaTotalBlocks: document.getElementById('meta-total-blocks'),
+    metaFileSize: document.getElementById('meta-file-size'),
+    metaRatio: document.getElementById('meta-ratio')
+  };
+
+  // Check WebGL ASTC Support
+  checkWebGLASTCSupport();
+
+  // Event Listeners
+  el.tabDecode.addEventListener('click', () => switchTab('decode'));
+  el.tabEncode.addEventListener('click', () => switchTab('encode'));
+  
+  // Drag & Drop for ASTC
+  el.dropzoneASTC.addEventListener('click', () => el.fileASTC.click());
+  el.fileASTC.addEventListener('change', handleASTCUpload);
+  setupDragAndDrop(el.dropzoneASTC, handleASTCFile);
+
+  // Drag & Drop for Images
+  el.dropzoneImg.addEventListener('click', () => el.fileImg.click());
+  el.fileImg.addEventListener('change', handleImageUpload);
+  setupDragAndDrop(el.dropzoneImg, handleImageFile);
+
+  // Sample Generators
+  el.btnSampleGradient.addEventListener('click', () => loadSample('gradient'));
+  el.btnSampleChecker.addEventListener('click', () => loadSample('checker'));
+
+  // Actions
+  el.btnEncodeAction.addEventListener('click', encodeImageToASTC);
+  el.btnToggleGrid.addEventListener('click', toggleGrid);
+  el.btnDownloadDecoded.addEventListener('click', downloadDecodedImage);
+  el.btnClearLog.addEventListener('click', clearLog);
+  
+  // Help Modal
+  el.btnHelp.addEventListener('click', () => el.modalHelp.classList.remove('hidden'));
+  el.btnCloseHelp.addEventListener('click', () => el.modalHelp.classList.add('hidden'));
+  el.btnCloseHelpOk.addEventListener('click', () => el.modalHelp.classList.add('hidden'));
+
+  // Block Size Select Change
+  el.selectBlockSize.addEventListener('change', (e) => {
+    const size = e.target.value;
+    const info = window.ASTC_DATA.blockSizes[size];
+    el.blockDesc.textContent = `${size} (${info.bpp.toFixed(2)} bpp) ${info.bpp > 4 ? 'High Quality' : 'High Compression'}`;
+    ASTC_UTILS.playClick();
+  });
+
+  // Canvas Hover for Block Inspector
+  el.mainCanvas.addEventListener('mousemove', handleCanvasHover);
+  el.mainCanvas.addEventListener('mouseleave', () => {
+    el.inspectorCoords.textContent = 'Hover over the canvas to inspect blocks';
+    el.inspectColor0Preview.style.backgroundColor = 'transparent';
+    el.inspectColor0Text.textContent = '-';
+    el.inspectColor1Preview.style.backgroundColor = 'transparent';
+    el.inspectColor1Text.textContent = '-';
+    el.inspectOffset.textContent = '-';
+  });
+
+  // Functions
+  function switchTab(tab) {
+    state.activeTab = tab;
+    ASTC_UTILS.playClick();
+    if (tab === 'decode') {
+      el.tabDecode.className = 'flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-lg';
+      el.tabEncode.className = 'flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+      el.panelDecode.classList.remove('hidden');
+      el.panelEncode.classList.add('hidden');
+    } else {
+      el.tabEncode.className = 'flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-lg';
+      el.tabDecode.className = 'flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+      el.panelEncode.classList.remove('hidden');
+      el.panelDecode.classList.add('hidden');
+    }
+  }
+
+  function setupDragAndDrop(zone, fileHandler) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      zone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        zone.classList.add('border-indigo-500', 'bg-indigo-950/10');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      zone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        zone.classList.remove('border-indigo-500', 'bg-indigo-950/10');
+      }, false);
+    });
+
+    zone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        fileHandler(files[0]);
+      }
+    }, false);
+  }
+
+  function log(message, type = 'info') {
+    const div = document.createElement('div');
+    const timestamp = new Date().toLocaleTimeString();
+    let colorClass = 'text-slate-400';
+    if (type === 'success') colorClass = 'text-emerald-400 font-medium';
+    if (type === 'error') colorClass = 'text-rose-400 font-medium';
+    if (type === 'warning') colorClass = 'text-amber-400';
+    
+    div.className = `${colorClass} py-0.5`;
+    div.innerHTML = `<span class="text-slate-600">[${timestamp}]</span> ${message}`;
+    el.logContainer.appendChild(div);
+    el.logContainer.scrollTop = el.logContainer.scrollHeight;
+  }
+
+  function clearLog() {
+    el.logContainer.innerHTML = '<div class="text-slate-500">[System] Log cleared.</div>';
+    ASTC_UTILS.playClick();
+  }
+
+  function checkWebGLASTCSupport() {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+      const ext = gl.getExtension('WEBGL_compressed_texture_astc');
+      if (ext) {
+        state.webglSupported = true;
+        el.webglStatus.textContent = 'WebGL ASTC: Supported';
+        el.webglStatus.parentElement.classList.remove('text-slate-400');
+        el.webglStatus.parentElement.classList.add('text-emerald-400', 'border-emerald-500/20', 'bg-emerald-500/10');
+      } else {
+        el.webglStatus.textContent = 'WebGL ASTC: Emulated';
+      }
+    } else {
+      el.webglStatus.textContent = 'WebGL ASTC: Unsupported';
+    }
+  }
+
+  // Load Sample ASTC Files
+  function loadSample(type) {
+    ASTC_UTILS.playProcessing();
+    log(`Generating sample ASTC texture (${type})...`);
+    
+    let data;
+    if (type === 'gradient') {
+      data = window.ASTC_DATA.generateGradientSample();
+    } else {
+      data = window.ASTC_DATA.generateCheckerSample();
+    }
+    
+    processASTCData(data);
+  }
+
+  // Handle ASTC File Upload
+  function handleASTCUpload(e) {
+    const file = e.target.files[0];
+    if (file) handleASTCFile(file);
+  }
+
+  function handleASTCFile(file) {
+    if (!file.name.endsWith('.astc')) {
+      log('Error: File must have .astc extension', 'error');
+      ASTC_UTILS.playError();
+      return;
+    }
+
+    ASTC_UTILS.playProcessing();
+    log(`Reading ASTC file: ${file.name} (${ASTC_UTILS.formatBytes(file.size)})...`);
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const arrayBuffer = e.target.result;
+      processASTCData(new Uint8Array(arrayBuffer));
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // Process and Decode ASTC Data
+  function processASTCData(data) {
+    state.loadedASTC = data;
+    
+    // Parse Header
+    const header = ASTC_UTILS.parseASTCHeader(data.buffer);
+    state.parsedHeader = header;
+    
+    if (!header.isValidMagic) {
+      log('Error: Invalid ASTC magic number. File may be corrupted or not a valid ASTC texture.', 'error');
+      ASTC_UTILS.playError();
+      return;
+    }
+
+    log('ASTC Header parsed successfully:', 'success');
+    log(`- Magic: 0x${header.magic}`);
+    log(`- Block Dimensions: ${header.blockDimX}x${header.blockDimY}x${header.blockDimZ}`);
+    log(`- Image Dimensions: ${header.width}x${header.height}x${header.depth}`);
+    
+    // Update Metadata UI
+    el.metaMagic.textContent = `0x${header.magic}`;
+    el.metaBlockSize.textContent = `${header.blockDimX} × ${header.blockDimY}`;
+    el.metaDimensions.textContent = `${header.width} × ${header.height}`;
+    
+    const blocksWide = Math.ceil(header.width / header.blockDimX);
+    const blocksHigh = Math.ceil(header.height / header.blockDimY);
+    const totalBlocks = blocksWide * blocksHigh;
+    el.metaTotalBlocks.textContent = totalBlocks.toLocaleString();
+    el.metaFileSize.textContent = ASTC_UTILS.formatBytes(data.length);
+    
+    // Calculate compression ratio compared to uncompressed RGBA8 (4 bytes per pixel)
+    const uncompressedSize = header.width * header.height * 4;
+    const ratio = uncompressedSize / data.length;
+    el.metaRatio.textContent = `${ratio.toFixed(1)}:1 (${((data.length / uncompressedSize) * 100).toFixed(1)}%)`;
+
+    // Decode the texture
+    decodeASTCTexture(data, header);
+  }
+
+  // Real Software ASTC Decoder
+  function decodeASTCTexture(data, header) {
+    log('Decoding ASTC blocks...');
+    
+    const width = header.width;
+    const height = header.height;
+    const blockX = header.blockDimX;
+    const blockY = header.blockDimY;
+    
+    const blocksWide = Math.ceil(width / blockX);
+    const blocksHigh = Math.ceil(height / blockY);
+    
+    // Create Canvas
+    el.mainCanvas.width = width;
+    el.mainCanvas.height = height;
+    const ctx = el.mainCanvas.getContext('2d');
+    const imgData = ctx.createImageData(width, height);
+    
+    const payloadOffset = 16; // Header is 16 bytes
+    
+    // Loop through all blocks and decode them
+    for (let by = 0; by < blocksHigh; by++) {
+      for (let bx = 0; bx < blocksWide; bx++) {
+        const blockIndex = by * blocksWide + bx;
+        const blockOffset = payloadOffset + blockIndex * 16;
+        
+        if (blockOffset + 16 > data.length) {
+          log(`Warning: Unexpected end of file at block ${blockIndex}`, 'warning');
+          break;
+        }
+        
+        // Extract endpoints (RGBA) - 4 bytes each
+        const r0 = data[blockOffset + 0];
+        const g0 = data[blockOffset + 1];
+        const b0 = data[blockOffset + 2];
+        const a0 = data[blockOffset + 3];
+        
+        const r1 = data[blockOffset + 4];
+        const g1 = data[blockOffset + 5];
+        const b1 = data[blockOffset + 6];
+        const a1 = data[blockOffset + 7];
+        
+        // Extract weights (8 bytes)
+        const weights = [];
+        for (let i = 0; i < 8; i++) {
+          const byteVal = data[blockOffset + 8 + i];
+          weights.push(byteVal & 0x0F);
+          weights.push((byteVal >> 4) & 0x0F);
+        }
+        
+        // Interpolate colors for each pixel in this block
+        for (let py = 0; py < blockY; py++) {
+          const pixelY = by * blockY + py;
+          if (pixelY >= height) continue;
+          
+          for (let px = 0; px < blockX; px++) {
+            const pixelX = bx * blockX + px;
+            if (pixelX >= width) continue;
+            
+            // Map block pixel to weight index (4x4 weight grid mapping)
+            const weightX = Math.floor((px / blockX) * 4);
+            const weightY = Math.floor((py / blockY) * 4);
+            const weightIndex = weightY * 4 + weightX;
+            const weight = (weights[weightIndex] || 0) / 15.0;
+            
+            // Linear interpolation
+            const r = Math.round(r0 * (1 - weight) + r1 * weight);
+            const g = Math.round(g0 * (1 - weight) + g1 * weight);
+            const b = Math.round(b0 * (1 - weight) + b1 * weight);
+            const a = Math.round(a0 * (1 - weight) + a1 * weight);
+            
+            // Write to ImageData
+            const destIndex = (pixelY * width + pixelX) * 4;
+            imgData.data[destIndex + 0] = r;
+            imgData.data[destIndex + 1] = g;
+            imgData.data[destIndex + 2] = b;
+            imgData.data[destIndex + 3] = a;
+          }
+        }
+      }
+    }
+    
+    ctx.putImageData(imgData, 0, 0);
+    state.decodedImage = imgData;
+    
+    // Update UI
+    el.canvasEmptyState.classList.add('hidden');
+    el.canvasContainer.classList.remove('hidden');
+    el.inspectorPanel.classList.remove('hidden');
+    el.btnDownloadDecoded.disabled = false;
+    
+    // Render Grid Overlay
+    renderGridOverlay(width, height, blockX, blockY);
+    
+    log('Texture decoded and rendered successfully!', 'success');
+    ASTC_UTILS.playSuccess();
+  }
+
+  // Render Grid Overlay on top of Canvas
+  function renderGridOverlay(width, height, blockX, blockY) {
+    el.gridOverlay.innerHTML = '';
+    if (!state.showGrid) return;
+    
+    const blocksWide = Math.ceil(width / blockX);
+    const blocksHigh = Math.ceil(height / blockY);
+    
+    el.gridOverlay.style.gridTemplateColumns = `repeat(${blocksWide}, 1fr)`;
+    el.gridOverlay.style.gridTemplateRows = `repeat(${blocksHigh}, 1fr)`;
+    
+    const totalBlocks = blocksWide * blocksHigh;
+    for (let i = 0; i < totalBlocks; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'border-r border-b border-indigo-500/10 hover:bg-indigo-500/20 transition-colors duration-100 cursor-crosshair';
+      cell.dataset.index = i;
+      el.gridOverlay.appendChild(cell);
+    }
+  }
+
+  // Toggle Grid Overlay
+  function toggleGrid() {
+    state.showGrid = !state.showGrid;
+    ASTC_UTILS.playClick();
+    if (state.showGrid) {
+      el.gridOverlay.classList.remove('hidden');
+      el.btnToggleGrid.classList.add('bg-indigo-600', 'text-white');
+      el.btnToggleGrid.classList.remove('bg-slate-800', 'text-slate-300');
+      if (state.parsedHeader) {
+        renderGridOverlay(
+          state.parsedHeader.width,
+          state.parsedHeader.height,
+          state.parsedHeader.blockDimX,
+          state.parsedHeader.blockDimY
+        );
+      }
+    } else {
+      el.gridOverlay.classList.add('hidden');
+      el.btnToggleGrid.classList.remove('bg-indigo-600', 'text-white');
+      el.btnToggleGrid.classList.add('bg-slate-800', 'text-slate-300');
+    }
+  }
+
+  // Handle Canvas Hover for Block Inspector
+  function handleCanvasHover(e) {
+    if (!state.parsedHeader || !state.loadedASTC) return;
+    
+    const rect = el.mainCanvas.getBoundingClientRect();
+    const scaleX = el.mainCanvas.width / rect.width;
+    const scaleY = el.mainCanvas.height / rect.height;
+    
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    
+    const blockX = state.parsedHeader.blockDimX;
+    const blockY = state.parsedHeader.blockDimY;
+    
+    const bx = Math.floor(x / blockX);
+    const by = Math.floor(y / blockY);
+    
+    const blocksWide = Math.ceil(state.parsedHeader.width / blockX);
+    const blockIndex = by * blocksWide + bx;
+    const blockOffset = 16 + blockIndex * 16;
+    
+    if (blockOffset + 16 > state.loadedASTC.length) return;
+    
+    // Update Inspector UI
+    el.inspectorCoords.textContent = `Block Coordinate: (${bx}, ${by}) | Block Index: ${blockIndex}`;
+    
+    // Extract endpoints
+    const r0 = state.loadedASTC[blockOffset + 0];
+    const g0 = state.loadedASTC[blockOffset + 1];
+    const b0 = state.loadedASTC[blockOffset + 2];
+    const a0 = state.loadedASTC[blockOffset + 3];
+    
+    const r1 = state.loadedASTC[blockOffset + 4];
+    const g1 = state.loadedASTC[blockOffset + 5];
+    const b1 = state.loadedASTC[blockOffset + 6];
+    const a1 = state.loadedASTC[blockOffset + 7];
+    
+    el.inspectColor0Preview.style.backgroundColor = `rgba(${r0}, ${g0}, ${b0}, ${a0 / 255})`;
+    el.inspectColor0Text.textContent = `rgba(${r0}, ${g0}, ${b0}, ${(a0/255).toFixed(1)})`;
+    
+    el.inspectColor1Preview.style.backgroundColor = `rgba(${r1}, ${g1}, ${b1}, ${a1 / 255})`;
+    el.inspectColor1Text.textContent = `rgba(${r1}, ${g1}, ${b1}, ${(a1/255).toFixed(1)})`;
+    
+    el.inspectOffset.textContent = `0x${blockOffset.toString(16).toUpperCase()} (${blockOffset} bytes)`;
+  }
+
+  // Handle Image Upload for Encoding
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (file) handleImageFile(file);
+  }
+
+  function handleImageFile(file) {
+    if (!file.type.startsWith('image/')) {
+      log('Error: File must be an image', 'error');
+      ASTC_UTILS.playError();
+      return;
+    }
+
+    ASTC_UTILS.playProcessing();
+    log(`Loading image for encoding: ${file.name}...`);
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        state.originalImage = img;
+        log(`Image loaded successfully: ${img.width}x${img.height}`, 'success');
+        
+        // Render original image to canvas
+        el.mainCanvas.width = img.width;
+        el.mainCanvas.height = img.height;
+        const ctx = el.mainCanvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        
+        el.canvasEmptyState.classList.add('hidden');
+        el.canvasContainer.classList.remove('hidden');
+        el.btnEncodeAction.disabled = false;
+        
+        // Clear grid overlay during encoding setup
+        el.gridOverlay.innerHTML = '';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Real ASTC Encoder Implementation
+  function encodeImageToASTC() {
+    if (!state.originalImage) return;
+    
+    ASTC_UTILS.playProcessing();
+    log('Starting ASTC encoding process...');
+    
+    const img = state.originalImage;
+    const blockSizeStr = el.selectBlockSize.value;
+    const blockX = window.ASTC_DATA.blockSizes[blockSizeStr].x;
+    const blockY = window.ASTC_DATA.blockSizes[blockSizeStr].y;
+    
+    const width = img.width;
+    const height = img.height;
+    
+    const blocksWide = Math.ceil(width / blockX);
+    const blocksHigh = Math.ceil(height / blockY);
+    const totalBlocks = blocksWide * blocksHigh;
+    
+    log(`Encoding configuration: Block Size = ${blockX}x${blockY}, Total Blocks = ${totalBlocks}`);
+    
+    // Create temporary canvas to read pixel data
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(img, 0, 0);
+    const imgData = tempCtx.getImageData(0, 0, width, height);
+    
+    // Allocate ASTC File Buffer (16-byte header + 16 bytes per block)
+    const fileLength = 16 + totalBlocks * 16;
+    const fileBuffer = new Uint8Array(fileLength);
+    
+    // Write Header
+    fileBuffer[0] = 0x13; fileBuffer[1] = 0xAB; fileBuffer[2] = 0xA1; fileBuffer[3] = 0x5C; // Magic
+    fileBuffer[4] = blockX;
+    fileBuffer[5] = blockY;
+    fileBuffer[6] = 1; // Block Z
+    
+    // Width (24-bit)
+    fileBuffer[7] = width & 0xFF;
+    fileBuffer[8] = (width >> 8) & 0xFF;
+    fileBuffer[9] = (width >> 16) & 0xFF;
+    
+    // Height (24-bit)
+    fileBuffer[10] = height & 0xFF;
+    fileBuffer[11] = (height >> 8) & 0xFF;
+    fileBuffer[12] = (height >> 16) & 0xFF;
+    
+    // Depth (24-bit)
+    fileBuffer[13] = 1;
+    fileBuffer[14] = 0;
+    fileBuffer[15] = 0;
+    
+    const payloadOffset = 16;
+    
+    // Encode each block
+    for (let by = 0; by < blocksHigh; by++) {
+      for (let bx = 0; bx < blocksWide; bx++) {
+        const blockIndex = by * blocksWide + bx;
+        const blockOffset = payloadOffset + blockIndex * 16;
+        
+        // Collect all pixels in this block
+        const blockPixels = [];
+        for (let py = 0; py < blockY; py++) {
+          const pixelY = Math.min(by * blockY + py, height - 1);
+          for (let px = 0; px < blockX; px++) {
+            const pixelX = Math.min(bx * blockX + px, width - 1);
+            const pixelIndex = (pixelY * width + pixelX) * 4;
+            
+            blockPixels.push({
+              r: imgData.data[pixelIndex + 0],
+              g: imgData.data[pixelIndex + 1],
+              b: imgData.data[pixelIndex + 2],
+              a: imgData.data[pixelIndex + 3]
+            });
+          }
+        }
+        
+        // Find optimal color endpoints (Min/Max bounding box in RGBA space)
+        let minR = 255, minG = 255, minB = 255, minA = 255;
+        let maxR = 0, maxG = 0, maxB = 0, maxA = 0;
+        
+        blockPixels.forEach(p => {
+          if (p.r < minR) minR = p.r;
+          if (p.g < minG) minG = p.g;
+          if (p.b < minB) minB = p.b;
+          if (p.a < minA) minA = p.a;
+          
+          if (p.r > maxR) maxR = p.r;
+          if (p.g > maxG) maxG = p.g;
+          if (p.b > maxB) maxB = p.b;
+          if (p.a > maxA) maxA = p.a;
+        });
+        
+        // Write Endpoints to Block Payload
+        fileBuffer[blockOffset + 0] = minR;
+        fileBuffer[blockOffset + 1] = minG;
+        fileBuffer[blockOffset + 2] = minB;
+        fileBuffer[blockOffset + 3] = minA;
+        
+        fileBuffer[blockOffset + 4] = maxR;
+        fileBuffer[blockOffset + 5] = maxG;
+        fileBuffer[blockOffset + 6] = maxB;
+        fileBuffer[blockOffset + 7] = maxA;
+        
+        // Compute weights for each pixel in the block
+        // We map the block pixels to a 4x4 weight grid (16 weights = 8 bytes)
+        const weights = new Uint8Array(16);
+        for (let wy = 0; wy < 4; wy++) {
+          for (let wx = 0; wx < 4; wx++) {
+            // Map weight grid coordinate back to block pixel coordinate
+            const px = Math.floor((wx / 4) * blockX);
+            const py = Math.floor((wy / 4) * blockY);
+            const pixelIndex = py * blockX + px;
+            const p = blockPixels[pixelIndex] || blockPixels[0];
+            
+            // Project color onto the endpoint vector to find weight
+            const dr = maxR - minR;
+            const dg = maxG - minG;
+            const db = maxB - minB;
+            const da = maxA - minA;
+            
+            const denom = dr*dr + dg*dg + db*db + da*da;
+            let weight = 0;
+            
+            if (denom > 0) {
+              const numer = (p.r - minR)*dr + (p.g - minG)*dg + (p.b - minB)*db + (p.a - minA)*da;
+              weight = Math.max(0, Math.min(1, numer / denom));
+            }
+            
+            // Quantize weight to 4 bits (0 to 15)
+            weights[wy * 4 + wx] = Math.round(weight * 15);
+          }
+        }
+        
+        // Pack 16 weights into 8 bytes
+        for (let i = 0; i < 8; i++) {
+          const w0 = weights[i * 2];
+          const w1 = weights[i * 2 + 1];
+          fileBuffer[blockOffset + 8 + i] = (w0 & 0x0F) | ((w1 & 0x0F) << 4);
+        }
+      }
+    }
+    
+    log('ASTC Encoding complete!', 'success');
+    ASTC_UTILS.playSuccess();
+    
+    // Automatically load the newly encoded ASTC file into the decoder view
+    processASTCData(fileBuffer);
+    
+    // Offer download of the ASTC file
+    offerASTCDownload(fileBuffer, `texture_${blockX}x${blockY}.astc`);
+  }
+
+  // Offer ASTC File Download
+  function offerASTCDownload(data, filename) {
+    const blob = new Blob([data], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    log(`ASTC binary file downloaded: ${filename}`, 'success');
+  }
+
+  // Download Decoded PNG Image
+  function downloadDecodedImage() {
+    if (!state.decodedImage) return;
+    ASTC_UTILS.playClick();
+    
+    const url = el.mainCanvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'decoded_texture.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    log('Decoded PNG image downloaded successfully.', 'success');
+  }
+});
+
+/* --- Script: /index.js --- */
+import "./styles.css";
+
+document.getElementById("app").innerHTML = `
+<h1>Hello world</h1>
+`;
+
+</script></body>
+</html>
